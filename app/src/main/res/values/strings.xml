@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Habit</string>
+    <string name="action_settings">Settings</string>
+
+
+    <string name="nextPageText">Next Page</string>
+
+    <string name="buttonnotclicked_textview">Click the button!</string>
+    <string name="buttonclicked_textview">\nClicked!</string>
+    <string name="buttonunclicked_textview">\nUnclicked!</string>
+</resources>
