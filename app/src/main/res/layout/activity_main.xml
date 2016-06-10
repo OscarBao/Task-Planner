@@ -30,26 +30,6 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/helloWorldText"
-        android:textSize="75sp"
-        android:gravity="center_horizontal"
-        android:text="@string/buttonnotclicked_textview"
-        android:paddingBottom="@dimen/fab_helloworld_padding"
-        android:layout_centerVertical="true"
-        android:layout_alignParentStart="true" />
-
-
-    <ImageButton android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/helloWorldText"
-        android:src="@drawable/green_button"
-        android:background="@null"
-        android:scaleType="fitXY"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -60,11 +40,10 @@
         android:layout_alignParentEnd="true"
         android:text="@string/nextPageText" />
 
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Fragment"
+        android:text="Add Next Fragment"
         android:id="@+id/add_fragment"
         android:layout_above="@+id/toAct2"
         android:layout_alignEnd="@+id/toAct2" />

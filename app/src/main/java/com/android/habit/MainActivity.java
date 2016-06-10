@@ -18,11 +18,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView txt;
-    ImageButton fab;
     FrameLayout fragContainer;
+
+    ArrayList<Fragment> fragments;
+    int currentFragmentIndex = 0;
 
     //Bottom buttons
     Button nextPage;
@@ -40,10 +44,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(toolbar);
 
 
+        fragments = new ArrayList<>();
+        fragments.add(new SecondHelloWorldFragment());
+        fragments.add(new ThirdHelloWorldFragment());
         fm = getFragmentManager();
 
 
-        fab = (ImageButton) findViewById(R.id.fab);
+
+        //Views
         fragContainer = (FrameLayout) findViewById(R.id.fragment_container);
 
         //Bottom buttons
@@ -52,14 +60,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         removeFragButton = (Button) findViewById(R.id.remove_fragment);
 
 
-        fab.setOnClickListener(this);
+
 
         removeFragButton.setOnClickListener(this);
         addFragButton.setOnClickListener(this);
         nextPage.setOnClickListener(this);
 
 
-        txt = (TextView) findViewById(R.id.helloWorldText);
     }
 
     @Override
@@ -87,18 +94,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch(v.getId()) {
-            case R.id.fab:
-                if(txt.getText().equals(getResources().getString(R.string.buttonclicked_textview))) {
-                    txt.setText(R.string.buttonunclicked_textview);
-                    fab.setImageResource(R.drawable.green_button);
-                }
-                else {
-                    txt.setText(R.string.buttonclicked_textview);
-                    fab.setImageResource(R.drawable.gray_button);
-                }
-
-
-                break;
             case R.id.toAct2:
                 Intent toAct2Intent = new Intent(this, ListTestActivity.class);
                 startActivity(toAct2Intent);
@@ -107,19 +102,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 FragmentTransaction ft = fm.beginTransaction();
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                ft.add(R.id.fragment_container, new SecondHelloWorldFragment());
+                ft.add(R.id.fragment_container, fragments.get(currentFragmentIndex));
                 ft.addToBackStack(null);
                 ft.commit();
 
-                Fragment frag = (Fragment) getFragmentManager().findFragmentById(R.id.fragment_container);
-                if(frag == null || !frag.isInLayout()) {
-                    txt.setText(R.string.buttonunclicked_textview);
-                    fab.setImageResource(R.drawable.green_button);
-                }
-                else {
-                    txt.setText(R.string.buttonclicked_textview);
-                    fab.setImageResource(R.drawable.gray_button);
-                }
+                currentFragmentIndex++;
+                if(currentFragmentIndex >= fragments.size()) currentFragmentIndex = 0;
                 break;
             case R.id.remove_fragment:
                 ft = fm.beginTransaction();
