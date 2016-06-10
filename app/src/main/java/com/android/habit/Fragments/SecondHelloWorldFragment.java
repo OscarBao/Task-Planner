@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.android.habit.R;
 
@@ -15,8 +17,18 @@ import com.android.habit.R;
 public class SecondHelloWorldFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_second_hello_world, container, false);
+        String[] myStringArray = {"String1", "String2", "String3"};
 
-        return inflater.inflate(R.layout.fragment_second_hello_world, container, false);
+        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(
+                getActivity(),
+                android.R.layout.simple_list_item_1,
+                myStringArray
+        );
+
+        ListView listView = (ListView) v.findViewById(R.id.secondPageList);
+        listView.setAdapter(myAdapter);
+        return v;
     }
 
     @Override

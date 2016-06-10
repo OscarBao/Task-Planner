@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.android.habit.Facades.FragmentManagerFacade;
+import com.android.habit.Fragments.FirstHelloWorldFragment;
 import com.android.habit.Fragments.SecondHelloWorldFragment;
 import com.android.habit.Fragments.ThirdHelloWorldFragment;
 import com.android.habit.R;
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Class fragmentClass = null;
         switch(menuItem.getItemId()) {
             case R.id.nav_first_fragment:
-                fragmentClass = SecondHelloWorldFragment.class;
+                fragmentClass = FirstHelloWorldFragment.class;
                 break;
             case R.id.nav_second_fragment:
                 fragmentClass = SecondHelloWorldFragment.class;
