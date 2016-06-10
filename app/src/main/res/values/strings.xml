@@ -8,4 +8,7 @@
     <string name="buttonnotclicked_textview">Click the button!</string>
     <string name="buttonclicked_textview">\nClicked!</string>
     <string name="buttonunclicked_textview">\nUnclicked!</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
