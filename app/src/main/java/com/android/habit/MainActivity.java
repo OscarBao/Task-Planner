@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     FragmentManager fm;
+    FragmentManagerFacade fragmentManagerFacade;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +46,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(toolbar);
 
 
+        //Create fragments list
         fragments = new ArrayList<>();
         fragments.add(new SecondHelloWorldFragment());
         fragments.add(new ThirdHelloWorldFragment());
+
+        //Get fragment management tools
         fm = getFragmentManager();
-
-
+        fragmentManagerFacade = new FragmentManagerFacade(fm);
 
         //Views
         fragContainer = (FrameLayout) findViewById(R.id.fragment_container);
@@ -95,27 +99,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.toAct2:
+
                 Intent toAct2Intent = new Intent(this, ListTestActivity.class);
                 startActivity(toAct2Intent);
                 break;
+
             case R.id.add_fragment:
 
-                FragmentTransaction ft = fm.beginTransaction();
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                ft.add(R.id.fragment_container, fragments.get(currentFragmentIndex));
-                ft.addToBackStack(null);
-                ft.commit();
+                fragmentManagerFacade.addFragmentToLayout(R.id.fragment_container, fragments.get(currentFragmentIndex));
 
                 currentFragmentIndex++;
                 if(currentFragmentIndex >= fragments.size()) currentFragmentIndex = 0;
                 break;
+
             case R.id.remove_fragment:
-                ft = fm.beginTransaction();
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-                ft.remove(fm.findFragmentById(R.id.fragment_container));
-                ft.addToBackStack(null);
-                ft.commit();
+
+                fragmentManagerFacade.removeFragmentFromLayout(R.id.fragment_container);
                 break;
+
             default:
                 break;
         }
