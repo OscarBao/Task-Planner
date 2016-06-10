@@ -1,4 +1,4 @@
-package com.android.habit;
+package com.android.habit.Fragments;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.android.habit.R;
 
 /**
  * Created by Oscar_Local on 6/10/2016.

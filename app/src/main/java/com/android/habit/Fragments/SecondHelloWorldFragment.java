@@ -1,4 +1,4 @@
-package com.android.habit;
+package com.android.habit.Fragments;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.android.habit.R;
 
 /**
  * Created by Oscar_Local on 6/10/2016.

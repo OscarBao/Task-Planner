@@ -1,9 +1,11 @@
-package com.android.habit;
+package com.android.habit.Activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.android.habit.R;
 
 public class ListTestActivity extends AppCompatActivity {
 
