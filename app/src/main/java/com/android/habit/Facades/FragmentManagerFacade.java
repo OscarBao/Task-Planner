@@ -10,11 +10,9 @@ import android.util.Log;
  */
 public class FragmentManagerFacade {
     FragmentManager fragmentManager;
-    Fragment[] fragments;
 
-    public FragmentManagerFacade(FragmentManager fragmentManager, Fragment[] fragments) {
+    public FragmentManagerFacade(FragmentManager fragmentManager) {
         this.fragmentManager = fragmentManager;
-        this.fragments = fragments;
     }
 
 
@@ -22,21 +20,12 @@ public class FragmentManagerFacade {
         removeFragmentFromLayout(containerResId, null);
     }
 
-    public void addFragmentsToLayout(int containerResId) {
+    public void replaceFragment(int containerResId, Fragment fragment) {
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        for(Fragment frag : fragments) {
-            ft.add(containerResId, frag);
-        }
+        ft.replace(containerResId, fragment);
         ft.commit();
     }
 
-    public void hideAllFragments() {
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        for(Fragment frag : fragments) {
-            ft.hide(frag);
-        }
-        ft.commit();
-    }
 
     public void hideFragment(Fragment fragment) {
         FragmentTransaction ft = fragmentManager.beginTransaction();

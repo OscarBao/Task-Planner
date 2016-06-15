@@ -25,6 +25,9 @@ import com.android.habit.Fragments.HabitFragment;
 import com.android.habit.Fragments.SecondHelloWorldFragment;
 import com.android.habit.Fragments.ThirdHelloWorldFragment;
 import com.android.habit.R;
+import com.android.habit.StaticObjects.ProgressManager;
+import com.android.habit.StaticObjects.TaskDaysManager;
+import com.android.habit.StaticObjects.TasksList;
 
 import java.util.ArrayList;
 
@@ -39,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ActionBarDrawerToggle drawerToggle;
 
 
-    ArrayList<Fragment> fragments;
 
     //Bottom buttons
     Button nextPage;
@@ -59,23 +61,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDrawer = (DrawerLayout) findViewById(R.id.navigation_bar_layout);
 
         nvDrawer = (NavigationView) findViewById(R.id.navigation_bar_layout_nvview);
-
         setupDrawerContent(nvDrawer);
 
-        //Create fragments list
-        fragments = new ArrayList<>();
-        fragments.add(new FirstHelloWorldFragment());
-        fragments.add(new SecondHelloWorldFragment());
-        fragments.add(new ThirdHelloWorldFragment());
-        fragments.add(new HabitFragment());
+        ProgressManager progress = new ProgressManager(this);
+        TaskDaysManager daysManager = new TaskDaysManager(this);
+        TasksList.startList();
 
         //Get fragment management tools
         fm = getFragmentManager();
-        Fragment[] fragsArray = new Fragment[fragments.size()];
-        fragsArray = fragments.toArray(fragsArray);
-        fragmentManagerFacade = new FragmentManagerFacade(fm, fragsArray);
-        fragmentManagerFacade.addFragmentsToLayout(R.id.fragment_container);
-        fragmentManagerFacade.hideAllFragments();
+        fragmentManagerFacade = new FragmentManagerFacade(fm);
 
         //Views
         fragContainer = (FrameLayout) findViewById(R.id.fragment_container);
@@ -88,13 +82,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         //Set default fragment to the FirstHelloWorldFragment
-        currentFragment = fragments.get(fragments.size()-1);
+        currentFragment = new HabitFragment();
         updateFragment();
     }
 
     private void updateFragment() {
-        fragmentManagerFacade.hideAllFragments();
-        fragmentManagerFacade.showFragment(currentFragment);
+        fragmentManagerFacade.replaceFragment(R.id.fragment_container, currentFragment);
     }
 
 
@@ -139,25 +132,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Fragment fragment = null;
         switch(menuItem.getItemId()) {
             case R.id.nav_first_fragment:
-                fragment = fragments.get(0);
+                currentFragment = new FirstHelloWorldFragment();
                 break;
             case R.id.nav_second_fragment:
-                fragment = fragments.get(1);
+                currentFragment = new SecondHelloWorldFragment();
                 break;
             case R.id.nav_third_fragment:
-                fragment = fragments.get(2);
+                currentFragment = new ThirdHelloWorldFragment();
                 break;
             case R.id.nav_habit_fragment:
-                fragment = fragments.get(3);
+                currentFragment = new HabitFragment();
                 break;
             default:
                 break;
         }
 
 
-        fragmentManagerFacade.hideAllFragments();
         //fragmentManagerFacade.hideFragment(fm.findFragmentById(R.id.fragment_container));
-        fragmentManagerFacade.showFragment(fragment);
+        fragmentManagerFacade.replaceFragment(R.id.fragment_container, currentFragment);
 
         // Highlight the selected item has been done by NavigationView
         menuItem.setChecked(true);

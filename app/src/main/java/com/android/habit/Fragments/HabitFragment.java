@@ -1,6 +1,5 @@
 package com.android.habit.Fragments;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
@@ -15,15 +14,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.habit.Adapters.TasksAdapter;
 import com.android.habit.Objects.Task;
-import com.android.habit.Objects.TasksList;
+import com.android.habit.StaticObjects.ProgressManager;
+import com.android.habit.StaticObjects.TaskDaysManager;
+import com.android.habit.StaticObjects.TasksList;
 import com.android.habit.R;
 
 import java.util.ArrayList;
-import java.util.concurrent.RunnableFuture;
 
 /**
  * Created by Oscar_Local on 6/14/2016.
@@ -38,6 +39,7 @@ public class HabitFragment extends Fragment {
 
     //Controls
     Button addTaskButton;
+    ProgressBar levelBar;
 
     //Static variables
     static String newTaskName;
@@ -48,7 +50,8 @@ public class HabitFragment extends Fragment {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        TasksList.startList();
+
+        TaskDaysManager.markNextMidnight();
 
         //Register listeners
         itemClickListener = new HabitsItemClickListener();
@@ -57,34 +60,40 @@ public class HabitFragment extends Fragment {
 
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_habit, container, false);
 
+        //Setting up listview
         tasksAdapter = new TasksAdapter(v.getContext(), (ArrayList<Task>)(TasksList.getList()));
-
-        addTaskButton = (Button) v.findViewById(R.id.fragment_habit_button_add_task);
-        addTaskButton.setOnClickListener(onClickListener);
-
         listView = (ListView) v.findViewById(R.id.fragment_habit_listview);
         listView.setOnItemClickListener(itemClickListener);
         listView.setAdapter((ListAdapter) tasksAdapter);
+        tasksAdapter.notifyDataSetChanged();
+
+        //Controls
+        addTaskButton = (Button) v.findViewById(R.id.fragment_habit_button_add_task);
+        addTaskButton.setOnClickListener(onClickListener);
+        levelBar = (ProgressBar) v.findViewById(R.id.fragment_habit_level_bar);
+        levelBar.setProgress(ProgressManager.getCurrentProgress());
+
+
+        //Update tasks
+        if(TaskDaysManager.isPastPreviousSetMidnight()) {
+            clearTaskList();
+        }
+        TaskDaysManager.markNextMidnight();
+
+
 
         return v;
     }
 
-    protected void addNewTask() {
-        TasksList.addTask(new Task(newTaskName, newTaskDescription, newTaskPoints));
-        tasksAdapter.notifyDataSetChanged();
 
-        wipeStaticDialogData();
-
-    }
-
-    private void wipeStaticDialogData() {
-        newTaskName = "";
-        newTaskDescription = "";
-        newTaskPoints = 0;
-    }
 
     private void showNewTaskDialog() {
         final Dialog dialog = new Dialog(getView().getContext());
@@ -152,7 +161,52 @@ public class HabitFragment extends Fragment {
     protected class HabitsItemClickListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            //TODO: make something happen later
+            completeTask(TasksList.getList().get(position));
+            removeTask(position);
         }
+    }
+
+    /*
+    --------------->Private helper methods
+     */
+    private void completeTask(Task task) {
+        updateProgressFromTask(task, true);
+    }
+
+    private void updateProgressFromTask(Task task, boolean success) {
+        if(success) {
+            levelBar.setProgress(levelBar.getProgress() + task.getTaskPoints());
+            ProgressManager.addProgress(task.getTaskPoints());
+        }
+        else {
+            levelBar.setProgress(levelBar.getProgress() - task.getTaskPoints());
+            ProgressManager.subtractProgress(task.getTaskPoints());
+        }
+    }
+
+    private void addNewTask() {
+        TasksList.addTask(new Task(newTaskName, newTaskDescription, newTaskPoints));
+        tasksAdapter.notifyDataSetChanged();
+
+        wipeStaticDialogData();
+    }
+
+    private void removeTask(int pos) {
+        TasksList.getList().remove(pos);
+        tasksAdapter.notifyDataSetChanged();
+    }
+
+    private void wipeStaticDialogData() {
+        newTaskName = "";
+        newTaskDescription = "";
+        newTaskPoints = 0;
+    }
+
+    private void clearTaskList() {
+        for(Task task : TasksList.getList()) {
+            updateProgressFromTask(task, false);
+        }
+        TasksList.getList().clear();
+        tasksAdapter.notifyDataSetChanged();
     }
 }

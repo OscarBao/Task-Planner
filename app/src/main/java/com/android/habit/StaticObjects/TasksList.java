@@ -1,4 +1,6 @@
-package com.android.habit.Objects;
+package com.android.habit.StaticObjects;
+
+import com.android.habit.Objects.Task;
 
 import java.util.ArrayList;
 import java.util.Iterator;
