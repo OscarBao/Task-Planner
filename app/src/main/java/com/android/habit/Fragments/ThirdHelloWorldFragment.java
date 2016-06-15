@@ -16,7 +16,6 @@ import com.android.habit.R;
  */
 public class ThirdHelloWorldFragment extends Fragment implements View.OnClickListener {
 
-    ImageButton fab;
     TextView txt;
 
     @Override
@@ -24,7 +23,7 @@ public class ThirdHelloWorldFragment extends Fragment implements View.OnClickLis
 
         View v = inflater.inflate(R.layout.fragment_third_hello_world, container, false);
 
-        fab = (ImageButton) v.findViewById(R.id.fab);
+        ImageButton fab = (ImageButton) v.findViewById(R.id.fab);
         txt = (TextView) v.findViewById(R.id.helloWorldText);
         fab.setOnClickListener(this);
 
@@ -42,10 +41,10 @@ public class ThirdHelloWorldFragment extends Fragment implements View.OnClickLis
             case R.id.fab:
                 if (txt.getText().equals(getResources().getString(R.string.buttonclicked_textview))) {
                     txt.setText(R.string.buttonunclicked_textview);
-                    fab.setImageResource(R.drawable.green_button);
+                    ((ImageButton)view).setImageResource(R.drawable.green_button);
                 } else {
                     txt.setText(R.string.buttonclicked_textview);
-                    fab.setImageResource(R.drawable.gray_button);
+                    ((ImageButton)view).setImageResource(R.drawable.gray_button);
                 }
 
 

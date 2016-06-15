@@ -8,13 +8,6 @@
     tools:context=".Activities.MainActivity">
 
 
-    <include layout="@layout/content_main" />
-
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"/>
 
 
     <Button
@@ -24,24 +17,10 @@
         android:id="@+id/toAct2"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:text="@string/nextPageText" />
+        android:text="@string/nextPageText"
+        android:visibility="gone"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add Next Fragment"
-        android:id="@+id/add_fragment"
-        android:layout_above="@+id/toAct2"
-        android:layout_alignEnd="@+id/toAct2" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Remove Fragment"
-        android:id="@+id/remove_fragment"
-        android:layout_above="@+id/add_fragment"
-        android:layout_alignEnd="@+id/add_fragment" />
 
     <include
         layout="@layout/drawer_layout"/>

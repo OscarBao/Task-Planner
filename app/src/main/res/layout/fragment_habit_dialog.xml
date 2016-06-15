@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Name:"
+        android:id="@+id/fragment_habit_dialog_textview_prompt_name"
+        android:textSize="20sp"
+        android:layout_alignBottom="@+id/fragment_habit_dialog_edittext_name"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="false"
+        android:layout_alignTop="@+id/fragment_habit_dialog_edittext_name"
+        android:gravity="center"
+        android:layout_alignEnd="@+id/fragment_habit_dialog_textview_prompt_description" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Description:"
+        android:id="@+id/fragment_habit_dialog_textview_prompt_description"
+        android:gravity="center"
+        android:textSize="20sp"
+
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/fragment_habit_dialog_edittext_description"
+        android:layout_alignTop="@+id/fragment_habit_dialog_edittext_description" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Points:"
+        android:id="@+id/fragment_habit_dialog_textview_prompt_points"
+        android:layout_below="@+id/fragment_habit_dialog_edittext_description"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/fragment_habit_dialog_edittext_points"
+        android:gravity="center"
+        android:layout_toStartOf="@+id/fragment_habit_dialog_edittext_description" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_habit_dialog_edittext_description"
+        android:hint="Enter description"
+        android:layout_below="@+id/fragment_habit_dialog_textview_prompt_name"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/fragment_habit_dialog_textview_prompt_name"
+        android:layout_toRightOf="@+id/fragment_habit_dialog_textview_prompt_description" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_habit_dialog_edittext_name"
+        android:layout_marginTop="31dp"
+        android:hint="Enter name"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/fragment_habit_dialog_textview_prompt_name" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ok"
+        android:id="@+id/fragment_habit_dialog_button_ok"
+        android:layout_below="@+id/fragment_habit_dialog_textview_prompt_points"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="40dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:id="@+id/fragment_habit_dialog_button_cancel"
+        android:layout_alignBottom="@+id/fragment_habit_dialog_button_ok"
+        android:layout_toStartOf="@+id/fragment_habit_dialog_button_ok" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberSigned"
+        android:ems="10"
+        android:id="@+id/fragment_habit_dialog_edittext_points"
+        android:layout_below="@+id/fragment_habit_dialog_edittext_description"
+        android:layout_alignEnd="@+id/fragment_habit_dialog_edittext_description"
+        android:hint="Enter task points"
+        android:layout_toEndOf="@+id/fragment_habit_dialog_textview_prompt_description"
+        android:layout_toRightOf="@+id/fragment_habit_dialog_textview_prompt_points" />
+</RelativeLayout>

@@ -2,6 +2,7 @@ package com.android.habit.Activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -15,10 +16,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.habit.Facades.FragmentManagerFacade;
 import com.android.habit.Fragments.FirstHelloWorldFragment;
+import com.android.habit.Fragments.HabitFragment;
 import com.android.habit.Fragments.SecondHelloWorldFragment;
 import com.android.habit.Fragments.ThirdHelloWorldFragment;
 import com.android.habit.R;
@@ -37,17 +40,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     ArrayList<Fragment> fragments;
-    int currentFragmentIndex = 0;
 
     //Bottom buttons
     Button nextPage;
-    Button addFragButton;
-    Button removeFragButton;
-
 
     FragmentManager fm;
     FragmentManagerFacade fragmentManagerFacade;
-
+    Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,31 +64,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //Create fragments list
         fragments = new ArrayList<>();
+        fragments.add(new FirstHelloWorldFragment());
         fragments.add(new SecondHelloWorldFragment());
         fragments.add(new ThirdHelloWorldFragment());
+        fragments.add(new HabitFragment());
 
         //Get fragment management tools
         fm = getFragmentManager();
-        fragmentManagerFacade = new FragmentManagerFacade(fm);
+        Fragment[] fragsArray = new Fragment[fragments.size()];
+        fragsArray = fragments.toArray(fragsArray);
+        fragmentManagerFacade = new FragmentManagerFacade(fm, fragsArray);
+        fragmentManagerFacade.addFragmentsToLayout(R.id.fragment_container);
+        fragmentManagerFacade.hideAllFragments();
 
         //Views
         fragContainer = (FrameLayout) findViewById(R.id.fragment_container);
 
         //Bottom buttons
         nextPage = (Button) findViewById(R.id.toAct2);
-        addFragButton = (Button) findViewById(R.id.add_fragment);
-        removeFragButton = (Button) findViewById(R.id.remove_fragment);
 
-
-
-
-        removeFragButton.setOnClickListener(this);
-        addFragButton.setOnClickListener(this);
+        //Set listeners
         nextPage.setOnClickListener(this);
 
 
+        //Set default fragment to the FirstHelloWorldFragment
+        currentFragment = fragments.get(fragments.size()-1);
+        updateFragment();
     }
 
+    private void updateFragment() {
+        fragmentManagerFacade.hideAllFragments();
+        fragmentManagerFacade.showFragment(currentFragment);
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateFragment();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -124,33 +137,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void selectDrawerItem(MenuItem menuItem) {
         Fragment fragment = null;
-        Class fragmentClass = null;
         switch(menuItem.getItemId()) {
             case R.id.nav_first_fragment:
-                fragmentClass = FirstHelloWorldFragment.class;
+                fragment = fragments.get(0);
                 break;
             case R.id.nav_second_fragment:
-                fragmentClass = SecondHelloWorldFragment.class;
+                fragment = fragments.get(1);
                 break;
             case R.id.nav_third_fragment:
-                fragmentClass = ThirdHelloWorldFragment.class;
+                fragment = fragments.get(2);
+                break;
+            case R.id.nav_habit_fragment:
+                fragment = fragments.get(3);
                 break;
             default:
                 break;
         }
 
-        try {
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        fragmentManagerFacade.addFragmentToLayout(R.id.fragment_container, fragment);
+        fragmentManagerFacade.hideAllFragments();
+        //fragmentManagerFacade.hideFragment(fm.findFragmentById(R.id.fragment_container));
+        fragmentManagerFacade.showFragment(fragment);
 
         // Highlight the selected item has been done by NavigationView
         menuItem.setChecked(true);
         // Set action bar title
-        setTitle(menuItem.getTitle());
         // Close the navigation drawer
         mDrawer.closeDrawers();
 
@@ -163,23 +174,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch(v.getId()) {
             case R.id.toAct2:
 
-                Intent toAct2Intent = new Intent(this, ListTestActivity.class);
-                startActivity(toAct2Intent);
                 break;
-
-            case R.id.add_fragment:
-
-                fragmentManagerFacade.addFragmentToLayout(R.id.fragment_container, fragments.get(currentFragmentIndex));
-
-                currentFragmentIndex++;
-                if(currentFragmentIndex >= fragments.size()) currentFragmentIndex = 0;
-                break;
-
-            case R.id.remove_fragment:
-
-                fragmentManagerFacade.removeFragmentFromLayout(R.id.fragment_container);
-                break;
-
             default:
                 break;
         }

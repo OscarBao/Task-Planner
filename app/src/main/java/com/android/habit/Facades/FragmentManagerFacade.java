@@ -10,29 +10,43 @@ import android.util.Log;
  */
 public class FragmentManagerFacade {
     FragmentManager fragmentManager;
+    Fragment[] fragments;
 
-    public FragmentManagerFacade(FragmentManager fragmentManager) {
+    public FragmentManagerFacade(FragmentManager fragmentManager, Fragment[] fragments) {
         this.fragmentManager = fragmentManager;
+        this.fragments = fragments;
     }
 
-    private boolean fragmentIsInLayout(int containerResId, Fragment fragment) {
-        Fragment fragmentInContainer = fragmentManager.findFragmentById(containerResId);
-        return ((fragmentInContainer != null)  && (fragmentInContainer.isInLayout()) && (fragmentInContainer.equals(fragment)));
-    }
-
-    public void addFragmentToLayout(int containerResId, Fragment fragment) {
-        addFragmentToLayout(containerResId, fragment, null);
-    }
 
     public void removeFragmentFromLayout(int containerResId) {
         removeFragmentFromLayout(containerResId, null);
     }
 
-    public void addFragmentToLayout(int containerResId, Fragment fragment, String backStackFlag) {
-        removeFragmentFromLayout(containerResId, "inside_call_to_remove_fragment_before_adding");
+    public void addFragmentsToLayout(int containerResId) {
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.add(containerResId, fragment);
-        ft.addToBackStack(backStackFlag);
+        for(Fragment frag : fragments) {
+            ft.add(containerResId, frag);
+        }
+        ft.commit();
+    }
+
+    public void hideAllFragments() {
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        for(Fragment frag : fragments) {
+            ft.hide(frag);
+        }
+        ft.commit();
+    }
+
+    public void hideFragment(Fragment fragment) {
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.hide(fragment);
+        ft.commit();
+    }
+
+    public void showFragment(Fragment fragment) {
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.show(fragment);
         ft.commit();
     }
 
