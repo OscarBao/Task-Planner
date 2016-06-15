@@ -23,7 +23,7 @@
 
 
     <include
-        layout="@layout/drawer_layout"/>
+        layout="@layout/navigation_bar_layout"/>
 
 
 </RelativeLayout>

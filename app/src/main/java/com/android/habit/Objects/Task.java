@@ -41,6 +41,7 @@ public class Task {
     --------------->Getters
      */
     public int getTaskPoints() {return points;}
+    public String getTaskPointsAsString() {return String.valueOf(getTaskPoints());}
     public String getDescription() {return description;}
     public String getName() {return name;}
     /*

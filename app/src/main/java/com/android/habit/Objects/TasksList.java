@@ -13,9 +13,9 @@ public class TasksList implements Iterable<Task> {
     /**
      * Default constructor
      */
-    public TasksList() {
-        tasks = new ArrayList<>();
-    }
+    public TasksList() {}
+
+    public static void startList() {tasks = new ArrayList<>();}
 
     public static void addTask(Task task) {
         tasks.add(task);
@@ -25,7 +25,7 @@ public class TasksList implements Iterable<Task> {
         return tasks.iterator();
     }
 
-    public List<Task> getList() {
+    public static List<Task> getList() {
         return tasks;
     }
 }

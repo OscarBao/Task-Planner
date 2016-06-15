@@ -23,20 +23,23 @@ import com.android.habit.Objects.TasksList;
 import com.android.habit.R;
 
 import java.util.ArrayList;
+import java.util.concurrent.RunnableFuture;
 
 /**
  * Created by Oscar_Local on 6/14/2016.
  */
 public class HabitFragment extends Fragment {
+
+    //List variables
+    ArrayAdapter tasksAdapter;
+    ListView listView;
     AdapterView.OnItemClickListener itemClickListener;
     View.OnClickListener onClickListener;
 
-    ListView listView;
-    TasksList tasks;
+    //Controls
     Button addTaskButton;
 
-    ArrayAdapter tasksAdapter;
-
+    //Static variables
     static String newTaskName;
     static String newTaskDescription;
     static int newTaskPoints;
@@ -45,22 +48,11 @@ public class HabitFragment extends Fragment {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
+        TasksList.startList();
+
         //Register listeners
         itemClickListener = new HabitsItemClickListener();
         onClickListener = new HabitsClickListener();
-
-
-
-        tasks = new TasksList();
-        tasks.addTask(new Task("Yoga", "Do some yoga", 3));
-        tasks.addTask(new Task("Homework", "Finish CSE 110 homework", 5));
-        /*
-        tasks.addTask(new Task("Habits", "Work on the Habits program. Why is static thing warning?", 6));
-        tasks.addTask(new Task("Test habits", "Testing whether the listView scrolls or not", 2));
-        tasks.addTask(new Task("Add tasks", "Add some more tasks to find out whether it does or not", 2));
-        tasks.addTask(new Task("Rest", "Get some rest since I'm sick", 3));
-        tasks.addTask(new Task("Eat medicine", "Eat medicine soon! In four hours", 5));
-        */
     }
 
 
@@ -68,27 +60,30 @@ public class HabitFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_habit, container, false);
 
-        String[] myStringArray = {"Chore 1", "Job 2"};
-
-        //TODO: bring outside of method later
-        tasksAdapter = new TasksAdapter(v.getContext(), (ArrayList<Task>)(tasks.getList()));
+        tasksAdapter = new TasksAdapter(v.getContext(), (ArrayList<Task>)(TasksList.getList()));
 
         addTaskButton = (Button) v.findViewById(R.id.fragment_habit_button_add_task);
-
-
         addTaskButton.setOnClickListener(onClickListener);
 
         listView = (ListView) v.findViewById(R.id.fragment_habit_listview);
         listView.setOnItemClickListener(itemClickListener);
         listView.setAdapter((ListAdapter) tasksAdapter);
 
-
         return v;
     }
 
     protected void addNewTask() {
-        tasks.addTask(new Task(newTaskName, newTaskDescription, newTaskPoints));
+        TasksList.addTask(new Task(newTaskName, newTaskDescription, newTaskPoints));
         tasksAdapter.notifyDataSetChanged();
+
+        wipeStaticDialogData();
+
+    }
+
+    private void wipeStaticDialogData() {
+        newTaskName = "";
+        newTaskDescription = "";
+        newTaskPoints = 0;
     }
 
     private void showNewTaskDialog() {
@@ -98,10 +93,10 @@ public class HabitFragment extends Fragment {
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                addNewTask();
             }
         });
         dialog.show();
+
 
         final EditText nameEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_name);
         final EditText descriptionEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_description);
@@ -114,8 +109,16 @@ public class HabitFragment extends Fragment {
             public void onClick(View v) {
                 newTaskName = nameEditor.getText().toString();
                 newTaskDescription = descriptionEditor.getText().toString();
-                newTaskPoints = Integer.parseInt(pointsEditor.getText().toString());
+                if(pointsEditor.getText().toString().equals("")) {
+                    newTaskPoints = 0;
+                }
+                else {
+                    newTaskPoints = Integer.parseInt(pointsEditor.getText().toString());
+                }
 
+                if(!newTaskName.equals("")) {
+                    addNewTask();
+                }
                 dialog.cancel();
             }
         });
@@ -133,6 +136,10 @@ public class HabitFragment extends Fragment {
         super.onAttach(context);
     }
 
+
+    /*
+    --------------->Inner listener classes
+     */
     protected class HabitsClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -142,7 +149,6 @@ public class HabitFragment extends Fragment {
             }
         }
     }
-
     protected class HabitsItemClickListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

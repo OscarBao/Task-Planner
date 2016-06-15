@@ -29,11 +29,13 @@ public class TasksAdapter extends ArrayAdapter<Task> {
             view = LayoutInflater.from(getContext()).inflate(R.layout.listitem_task, parent, false);
         }
 
-        TextView taskName = (TextView) view.findViewById(R.id.task_name);
-        TextView taskDescription = (TextView) view.findViewById(R.id.task_description);
+        TextView taskName = (TextView) view.findViewById(R.id.listitem_task_textview_name);
+        TextView taskDescription = (TextView) view.findViewById(R.id.listitem_task_textview_description);
+        TextView taskPoints = (TextView) view.findViewById(R.id.listitem_task_textview_points);
 
         taskName.setText(task.getName());
         taskDescription.setText(task.getDescription());
+        taskPoints.setText(task.getTaskPointsAsString());
 
         return view;
     }
