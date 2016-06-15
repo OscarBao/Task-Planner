@@ -12,7 +12,8 @@
         android:padding="5dp"
         android:layout_marginRight="20dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/listitem_task_textview_points" />
 
     <TextView
         android:id="@+id/listitem_task_textview_description"
@@ -33,7 +34,7 @@
         android:padding="5dp"
         android:textSize="23sp"
         android:id="@+id/listitem_task_textview_points"
-        android:layout_alignBottom="@+id/listitem_task_textview_description"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/listitem_task_textview_name" />
 
 </RelativeLayout>
