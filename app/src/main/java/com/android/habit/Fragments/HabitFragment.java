@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.habit.Adapters.TasksAdapter;
+import com.android.habit.Databases.TasksDB;
 import com.android.habit.Objects.Task;
 import com.android.habit.StaticObjects.ProgressManager;
 import com.android.habit.StaticObjects.TaskDaysManager;
@@ -37,6 +38,8 @@ public class HabitFragment extends Fragment {
     AdapterView.OnItemClickListener itemClickListener;
     View.OnClickListener onClickListener;
 
+    TasksDB db;
+
     //Controls
     Button addTaskButton;
     ProgressBar levelBar;
@@ -50,6 +53,7 @@ public class HabitFragment extends Fragment {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
+        db = new TasksDB(this.getActivity());
 
         TaskDaysManager.markNextMidnight();
 
@@ -69,6 +73,7 @@ public class HabitFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_habit, container, false);
 
         //Setting up listview
+        db.updateTaskList();
         tasksAdapter = new TasksAdapter(v.getContext(), (ArrayList<Task>)(TasksList.getList()));
         listView = (ListView) v.findViewById(R.id.fragment_habit_listview);
         listView.setOnItemClickListener(itemClickListener);
@@ -185,14 +190,16 @@ public class HabitFragment extends Fragment {
     }
 
     private void addNewTask() {
-        TasksList.addTask(new Task(newTaskName, newTaskDescription, newTaskPoints));
+        db.addTaskToDatabase(new Task(newTaskName, newTaskDescription, newTaskPoints));
+        db.updateTaskList();
         tasksAdapter.notifyDataSetChanged();
 
         wipeStaticDialogData();
     }
 
     private void removeTask(int pos) {
-        TasksList.getList().remove(pos);
+        db.removeTaskFromDatabase(TasksList.getList().get(pos));
+        db.updateTaskList();
         tasksAdapter.notifyDataSetChanged();
     }
 

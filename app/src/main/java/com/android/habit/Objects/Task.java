@@ -7,6 +7,7 @@ public class Task {
     String description;
     String name;
     int points;
+    int id;
 
     /*
     --------------->Constructor
@@ -28,6 +29,7 @@ public class Task {
         this.name = name;
         this.description = description;
         this.points = taskPoints;
+        this.id = 0;
     }
 
 
@@ -44,11 +46,13 @@ public class Task {
     public String getTaskPointsAsString() {return String.valueOf(getTaskPoints());}
     public String getDescription() {return description;}
     public String getName() {return name;}
+    public int getId() {return id;}
     /*
     --------------->Setters
      */
     public void setTaskPoints(int taskPoints) {this.points = taskPoints;}
     public void setDescription(String description) {this.description = description;}
     public void setName(String name) {this.name = name;}
+    public void setId(int id) {this.id = id;}
 
 }

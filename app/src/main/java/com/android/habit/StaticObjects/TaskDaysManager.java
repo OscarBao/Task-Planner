@@ -46,9 +46,9 @@ public class TaskDaysManager {
     --------------->Private methods
      */
     private static void setCalendarToNextMidnight() {
-        calendar.set(Calendar.HOUR_OF_DAY, 15);
-        calendar.set(Calendar.MINUTE, 12);
-        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
     }
 
     private static void setCalendarToCurrentTime() {
