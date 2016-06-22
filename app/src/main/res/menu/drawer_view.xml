@@ -16,7 +16,7 @@
             android:title="Third"/>
         <item
             android:id="@+id/nav_habit_fragment"
-            android:icon="@drawable/green_gem"
+            android:icon="@drawable/green_button"
             android:title="Habit"/>
     </group>
 

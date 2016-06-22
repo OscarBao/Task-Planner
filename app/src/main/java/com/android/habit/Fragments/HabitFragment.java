@@ -190,7 +190,7 @@ public class HabitFragment extends Fragment {
     }
 
     private void addNewTask() {
-        db.addTaskToDatabase(new Task(newTaskName, newTaskDescription, newTaskPoints));
+        db.addTaskToDatabase(new Task(newTaskName, newTaskDescription, newTaskPoints, TaskDaysManager.getTodayAsString()));
         db.updateTaskList();
         tasksAdapter.notifyDataSetChanged();
 

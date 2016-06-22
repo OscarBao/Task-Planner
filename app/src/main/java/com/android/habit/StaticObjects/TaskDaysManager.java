@@ -22,13 +22,15 @@ public class TaskDaysManager {
     static GregorianCalendar calendar;
     Context context;
     static SimpleDateFormat formatter;
+    static SimpleDateFormat onlyDayFormatter;
     static SharedPreferences sp;
 
     public TaskDaysManager(Context context) {
         this.context = context;
         calendar = new GregorianCalendar();
         sp = context.getSharedPreferences(SharedPreferenceConstants.TIMEDATA, Context.MODE_PRIVATE);
-        formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);   // lowercase "dd"
+        formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);   // lowercase "dd"
+        onlyDayFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     }
 
     public static boolean isPastPreviousSetMidnight() {
@@ -39,6 +41,15 @@ public class TaskDaysManager {
     public static void markNextMidnight() {
         setCalendarToNextMidnight();
         markDateIntoSharedPreferences(calendar);
+    }
+
+    public static String getTodayAsString() {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        Log.i("TaskDaysManager", formatter.format(cal.getTime()));
+        return onlyDayFormatter.format(cal.getTime());
     }
 
 

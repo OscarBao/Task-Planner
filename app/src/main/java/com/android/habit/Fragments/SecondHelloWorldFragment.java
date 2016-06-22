@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.habit.Databases.TasksDB;
 import com.android.habit.R;
 
 /**
@@ -35,6 +36,7 @@ public class SecondHelloWorldFragment extends Fragment implements AdapterView.On
         listView = (ListView) v.findViewById(R.id.secondPageList);
         listView.setOnItemClickListener(this);
         listView.setAdapter(myAdapter);
+        TasksDB.getInstance(this.getActivity()).clearDatabase();
         return v;
     }
 

@@ -11,8 +11,6 @@ import com.android.habit.Interfaces.DBConstants;
 import com.android.habit.Objects.Task;
 import com.android.habit.StaticObjects.TasksList;
 
-import java.util.ArrayList;
-
 /**
  * Created by Oscar_Local on 6/15/2016.
  */
@@ -28,7 +26,7 @@ public class TasksDB extends SQLiteOpenHelper {
     }
 
     public TasksDB(Context context) {
-        super(context, DBConstants.DATABASE_NAME, null, DBConstants.DATABASE_VERSION);
+        super(context, DBConstants.DATABASE_DOT_DB_NAME, null, DBConstants.DATABASE_VERSION);
     }
 
     @Override
@@ -41,6 +39,11 @@ public class TasksDB extends SQLiteOpenHelper {
         removeTaskFromDatabase(task, DBConstants.TASKS_TABLE_NAME, wdb);
     }
 
+    public void clearDatabase() {
+        SQLiteDatabase wdb = this.getWritableDatabase();
+        wdb.execSQL("DELETE FROM " + DBConstants.TASKS_TABLE_NAME + ";");
+    }
+
     public void addTaskToDatabase(Task task) {
         SQLiteDatabase wdb = this.getWritableDatabase();
         //TODO: Do a find check to see if already in
@@ -48,6 +51,7 @@ public class TasksDB extends SQLiteOpenHelper {
         cv.put(DBConstants.TASKS_COLUMN_NAME, task.getName());
         cv.put(DBConstants.TASKS_COLUMN_DESCRIPTION, task.getDescription());
         cv.put(DBConstants.TASKS_COLUMN_POINTS, task.getTaskPoints());
+        cv.put(DBConstants.TASKS_COLUMN_DATE, task.getDateString());
         wdb.insert(DBConstants.TASKS_TABLE_NAME, null, cv);
     }
 
@@ -58,6 +62,12 @@ public class TasksDB extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldNum, int newNum) {
+        if(oldNum < 2) {
+            db.execSQL("ALTER TABLE " + DBConstants.TASKS_TABLE_NAME + " ADD COLUMN " + DBConstants.TASKS_COLUMN_DATE + " TEXT;");
+        }
+        else if(oldNum < 3) {
+
+        }
     }
 
     /*
@@ -71,18 +81,26 @@ public class TasksDB extends SQLiteOpenHelper {
     private void updateTaskList(String table, SQLiteDatabase db) {
         TasksList.getList().clear();
 
-        Cursor c = db.rawQuery("SELECT * FROM " + table + ";", null);
+        Cursor c = db.rawQuery("SELECT * FROM " + table + " ORDER BY " + DBConstants.TASKS_COLUMN_DATE + " ASC;", null);
         if(c.getCount() == 0) {
             return;
         }
+        String prevLatestDateString = "";
         for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            String latestDateString = c.getString(c.getColumnIndex(DBConstants.TASKS_COLUMN_DATE));
+            if(!latestDateString.equals(prevLatestDateString)) {
+                Log.i("TasksDB", "Prev latest is not equal to latest: " + latestDateString + " versus " + prevLatestDateString);
+                TasksList.addTask(new Task());
+            }
             Task newTask = new Task();
             newTask.setId(c.getInt(c.getColumnIndex(DBConstants.TASKS_COLUMN_ID)));
             newTask.setName(c.getString(c.getColumnIndex(DBConstants.TASKS_COLUMN_NAME)));
             newTask.setDescription(c.getString(c.getColumnIndex(DBConstants.TASKS_COLUMN_DESCRIPTION)));
             newTask.setTaskPoints(c.getInt(c.getColumnIndex(DBConstants.TASKS_COLUMN_POINTS)));
-
+            newTask.setDateString(latestDateString);
             TasksList.addTask(newTask);
+
+            prevLatestDateString = latestDateString;
         }
 
         for(Task task : TasksList.getList()) {
