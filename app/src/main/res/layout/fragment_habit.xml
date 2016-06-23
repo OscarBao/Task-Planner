@@ -37,7 +37,7 @@
 
     <ListView
         android:background="@android:color/darker_gray"
-        android:layout_margin="10dp"
+        android:layout_margin="14dp"
         android:padding="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,4 +57,12 @@
         android:layout_marginBottom="23dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Overdue"
+        android:id="@+id/fragment_habit_button_overdue"
+        android:layout_alignTop="@+id/fragment_habit_button_add_task"
+        android:layout_toEndOf="@+id/fragment_habit_button_add_task" />
 </RelativeLayout>

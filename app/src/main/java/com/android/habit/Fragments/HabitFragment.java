@@ -42,6 +42,7 @@ public class HabitFragment extends Fragment {
 
     //Controls
     Button addTaskButton;
+    Button overdueButton;
     ProgressBar levelBar;
     AddTaskDialog addTaskDialog;
 
@@ -86,7 +87,9 @@ public class HabitFragment extends Fragment {
 
         //Controls
         addTaskButton = (Button) v.findViewById(R.id.fragment_habit_button_add_task);
+        overdueButton = (Button) v.findViewById(R.id.fragment_habit_button_overdue);
         addTaskButton.setOnClickListener(onClickListener);
+        overdueButton.setOnClickListener(onClickListener);
         levelBar = (ProgressBar) v.findViewById(R.id.fragment_habit_level_bar);
         levelBar.setProgress(ProgressManager.getCurrentProgress());
 
@@ -145,10 +148,10 @@ public class HabitFragment extends Fragment {
     }
 
     private void clearTodayTasks() {
-        for(Task task : TasksList.getList()) {
+        for(Task task : db.getThisDaysTasks(DaysManager.getTodayAsLong())) {
             updateProgressFromTask(task, false);
         }
-        TasksManager.clearTodaysTasks();
+        TasksManager.moveAllTodaysTasksToNextDay();
     }
 
     /*=========================================================================
@@ -160,6 +163,10 @@ public class HabitFragment extends Fragment {
             switch(v.getId()) {
                 case R.id.fragment_habit_button_add_task:
                     showNewTaskDialog();
+                    break;
+                case R.id.fragment_habit_button_overdue:
+                    clearTodayTasks();
+                    break;
             }
         }
     }

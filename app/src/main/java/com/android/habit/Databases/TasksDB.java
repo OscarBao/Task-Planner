@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.android.habit.Interfaces.DBConstants;
 import com.android.habit.Objects.Task;
+import com.android.habit.StaticObjects.DaysManager;
 import com.android.habit.StaticObjects.TasksList;
 
 import java.util.ArrayList;
@@ -62,6 +63,18 @@ public class TasksDB extends SQLiteOpenHelper {
         SQLiteDatabase wdb = this.getWritableDatabase();
         wdb.execSQL("UPDATE " + DBConstants.TASKS_TABLE_NAME + " SET " + DBConstants.TASKS_COLUMN_DATE + " = " + newDateNum
                     + " WHERE " + DBConstants.TASKS_COLUMN_DATE + " = " + oldDateNum + ";");
+        wdb.close();
+    }
+
+    public void moveAllTodaysTasksToNextDay() {
+        SQLiteDatabase wdb = this.getWritableDatabase();
+        String updateTasksByMillisecondsPerDayQuery =
+                (
+                    "UPDATE " + DBConstants.TASKS_TABLE_NAME + " SET " + DBConstants.TASKS_COLUMN_DATE
+                    + " = " + DBConstants.TASKS_COLUMN_DATE + " +86400000 WHERE " + DBConstants.TASKS_COLUMN_DATE
+                    + " = " + DaysManager.getTodayAsLong() + ";"
+                );
+        wdb.execSQL(updateTasksByMillisecondsPerDayQuery);
         wdb.close();
     }
 

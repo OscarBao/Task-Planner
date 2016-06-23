@@ -38,7 +38,6 @@ public class SecondHelloWorldFragment extends Fragment implements AdapterView.On
         listView = (ListView) v.findViewById(R.id.secondPageList);
         listView.setOnItemClickListener(this);
         listView.setAdapter(myAdapter);
-        TasksManager.moveTodaysTasksToNextDay();
         return v;
     }
 

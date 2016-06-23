@@ -17,7 +17,7 @@ public class Task {
      * Default constructor
      */
     public Task() {
-        this("N/A", "n/a", 0, -1, 0);
+        this("Date_By_Default", "n/a", 0, -1, 0);
     }
 
     /**

@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.habit.R;
+import com.android.habit.StaticObjects.TasksManager;
 
 /**
  * Created by Oscar_Local on 6/10/2016.
@@ -43,6 +44,7 @@ public class ThirdHelloWorldFragment extends Fragment implements View.OnClickLis
                     txt.setText(R.string.buttonunclicked_textview);
                     ((ImageButton)view).setImageResource(R.drawable.green_button);
                 } else {
+                    TasksManager.moveAllTodaysTasksToNextDay();
                     txt.setText(R.string.buttonclicked_textview);
                     ((ImageButton)view).setImageResource(R.drawable.gray_button);
                 }
