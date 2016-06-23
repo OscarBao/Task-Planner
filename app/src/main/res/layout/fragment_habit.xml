@@ -36,9 +36,9 @@
         android:indeterminate="false" />
 
     <ListView
-        android:background="@android:color/darker_gray"
+        android:background="#aac5c5c5"
         android:layout_margin="14dp"
-        android:padding="20dp"
+        android:padding="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:divider="@android:color/transparent"

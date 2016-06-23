@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:gravity="bottom"
-    android:background="?attr/colorPrimaryDark"
+    android:background="#606060"
     android:padding="10dp">
 
 
@@ -15,5 +15,6 @@
         android:text="Navigation\nMenu"
         android:textColor="@android:color/white"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textSize="25dp"/>
+        android:textSize="25dp"
+        android:background="#606060" />
 </LinearLayout>

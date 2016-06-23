@@ -9,8 +9,8 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Day"
         android:id="@+id/listitem_section_day_dayname"
-        android:background="#585fc8"
-        android:textColor="#cccccc"
+        android:background="#575757"
+        android:textColor="#d3d3d3"
         android:gravity="right"
         android:paddingEnd="20dp" />
 </LinearLayout>
