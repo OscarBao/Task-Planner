@@ -11,6 +11,8 @@ import com.android.habit.Interfaces.DBConstants;
 import com.android.habit.Objects.Task;
 import com.android.habit.StaticObjects.TasksList;
 
+import java.util.ArrayList;
+
 /**
  * Created by Oscar_Local on 6/15/2016.
  */
@@ -51,8 +53,31 @@ public class TasksDB extends SQLiteOpenHelper {
         cv.put(DBConstants.TASKS_COLUMN_NAME, task.getName());
         cv.put(DBConstants.TASKS_COLUMN_DESCRIPTION, task.getDescription());
         cv.put(DBConstants.TASKS_COLUMN_POINTS, task.getTaskPoints());
-        cv.put(DBConstants.TASKS_COLUMN_DATE, task.getDateString());
+        cv.put(DBConstants.TASKS_COLUMN_DATE, task.getDateNum());
         wdb.insert(DBConstants.TASKS_TABLE_NAME, null, cv);
+        wdb.close();
+    }
+
+    public void moveTasksToNextDay(long oldDateNum, long newDateNum) {
+        SQLiteDatabase wdb = this.getWritableDatabase();
+        wdb.execSQL("UPDATE " + DBConstants.TASKS_TABLE_NAME + " SET " + DBConstants.TASKS_COLUMN_DATE + " = " + newDateNum
+                    + " WHERE " + DBConstants.TASKS_COLUMN_DATE + " = " + oldDateNum + ";");
+        wdb.close();
+    }
+
+    public ArrayList<Task> getThisDaysTasks(long dateNum) {
+        SQLiteDatabase rdb = this.getReadableDatabase();
+        Cursor c = rdb.rawQuery("SELECT * FROM " + DBConstants.TASKS_TABLE_NAME + " WHERE " + DBConstants.TASKS_COLUMN_DATE + " = " + dateNum + ";", null);
+
+        System.out.println("-------------Cursor size is " + c.getCount());
+
+        ArrayList<Task> spit = new ArrayList<>();
+        for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            spit.add(buildTaskFromCursor(c));
+        }
+        rdb.close();
+        return spit;
+
     }
 
     public void updateTaskList() {
@@ -62,11 +87,22 @@ public class TasksDB extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldNum, int newNum) {
-        if(oldNum < 2) {
-            db.execSQL("ALTER TABLE " + DBConstants.TASKS_TABLE_NAME + " ADD COLUMN " + DBConstants.TASKS_COLUMN_DATE + " TEXT;");
-        }
-        else if(oldNum < 3) {
-
+        switch(oldNum) {
+            case 1:
+                db.execSQL("ALTER TABLE " + DBConstants.TASKS_TABLE_NAME + " ADD COLUMN " + DBConstants.TASKS_COLUMN_DATE + " INTEGER;");
+                break;
+            case 2:
+                db.execSQL("DROP TABLE IF EXISTS " + DBConstants.TASKS_TABLE_NAME);
+                onCreate(db);
+                break;
+            case 3:
+                db.execSQL("DROP TABLE IF EXISTS " + DBConstants.TASKS_TABLE_NAME);
+                onCreate(db);
+                break;
+            case 4:
+                db.execSQL("DROP TABLE IF EXISTS " + DBConstants.TASKS_TABLE_NAME);
+                onCreate(db);
+                break;
         }
     }
 
@@ -75,7 +111,7 @@ public class TasksDB extends SQLiteOpenHelper {
      */
     private void removeTaskFromDatabase(Task task, String table, SQLiteDatabase db) {
         if(!taskIsInDatabase(task, table, db)) return;
-        db.execSQL("DELETE FROM " + table + " WHERE " + DBConstants.TASKS_COLUMN_ID + " = " + task.getId() + ";");
+        db.execSQL("DELETE FROM " + table + " WHERE " + DBConstants.TASKS_COLUMN_ID + " LIKE " + task.getId() + ";");
     }
 
     private void updateTaskList(String table, SQLiteDatabase db) {
@@ -85,38 +121,52 @@ public class TasksDB extends SQLiteOpenHelper {
         if(c.getCount() == 0) {
             return;
         }
-        String prevLatestDateString = "";
+        long prevLatestDate = 0;
         for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            String latestDateString = c.getString(c.getColumnIndex(DBConstants.TASKS_COLUMN_DATE));
-            if(!latestDateString.equals(prevLatestDateString)) {
-                Log.i("TasksDB", "Prev latest is not equal to latest: " + latestDateString + " versus " + prevLatestDateString);
-                TasksList.addTask(new Task());
+            long latestDate = c.getLong(c.getColumnIndex(DBConstants.TASKS_COLUMN_DATE));
+            if(!(latestDate == prevLatestDate)) {
+                Task newTaskToAdd = new Task();
+                newTaskToAdd.setDateNum(latestDate);
+                TasksList.addTask(newTaskToAdd);
             }
-            Task newTask = new Task();
-            newTask.setId(c.getInt(c.getColumnIndex(DBConstants.TASKS_COLUMN_ID)));
-            newTask.setName(c.getString(c.getColumnIndex(DBConstants.TASKS_COLUMN_NAME)));
-            newTask.setDescription(c.getString(c.getColumnIndex(DBConstants.TASKS_COLUMN_DESCRIPTION)));
-            newTask.setTaskPoints(c.getInt(c.getColumnIndex(DBConstants.TASKS_COLUMN_POINTS)));
-            newTask.setDateString(latestDateString);
+            Task newTask = buildTaskFromCursor(c);
             TasksList.addTask(newTask);
 
-            prevLatestDateString = latestDateString;
+            prevLatestDate = latestDate;
         }
 
         for(Task task : TasksList.getList()) {
-            Log.i("TasksDB PrintList", "Next task is: " + task.getName() + " with id " + task.getId());
+            System.out.println("");
+            Log.i("TasksDB PrintList", "Next task is: " + task.getName() + " with id " + task.getId() + " and date " + task.getDateNum());
         }
+    }
+
+    private Task buildTaskFromCursor(Cursor c) {
+        Task newTask = new Task();
+        newTask.setId(c.getInt(c.getColumnIndex(DBConstants.TASKS_COLUMN_ID)));
+        newTask.setName(c.getString(c.getColumnIndex(DBConstants.TASKS_COLUMN_NAME)));
+        newTask.setDescription(c.getString(c.getColumnIndex(DBConstants.TASKS_COLUMN_DESCRIPTION)));
+        newTask.setTaskPoints(c.getInt(c.getColumnIndex(DBConstants.TASKS_COLUMN_POINTS)));
+        newTask.setDateNum(c.getLong(c.getColumnIndex(DBConstants.TASKS_COLUMN_DATE)));
+        return newTask;
     }
 
     private int findTaskId(Task task, String table, SQLiteDatabase db) {
         Cursor c = db.rawQuery("SELECT * FROM " + table + " WHERE " + DBConstants.TASKS_COLUMN_NAME + " = " + task.getName() + ";", null);
-        if(c.getCount() == 0) return 0;
+        if(c.getCount() == 0) {
+            c.close();
+            return 0;
+        }
         c.moveToFirst();
-        return c.getInt(c.getColumnIndex(DBConstants.TASKS_COLUMN_ID));
+        int id = c.getInt(c.getColumnIndex(DBConstants.TASKS_COLUMN_ID));
+        c.close();
+        return id;
     }
 
     private boolean taskIsInDatabase(Task task, String table, SQLiteDatabase db) {
         Cursor c = db.rawQuery("SELECT * FROM " + table + " WHERE " + DBConstants.TASKS_COLUMN_ID + " = " + task.getId() + ";", null);
-        return c.getCount() > 0;
+        int count = c.getCount();
+        c.close();
+        return count > 0;
     }
 }

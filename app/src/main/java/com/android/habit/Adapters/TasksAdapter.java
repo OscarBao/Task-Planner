@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.android.habit.Objects.Task;
 import com.android.habit.R;
+import com.android.habit.StaticObjects.DaysManager;
 import com.android.habit.StaticObjects.TasksList;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class TasksAdapter extends ArrayAdapter<Task> {
      */
     private String nextItemDate(int currentPos) {
         if(TasksList.getList().size() - 1 > currentPos) {
-            return getItem(currentPos + 1).getDateString();
+            return DaysManager.getFriendlyDateString(getItem(currentPos).getDateNum());
         }
         else return "";
     }

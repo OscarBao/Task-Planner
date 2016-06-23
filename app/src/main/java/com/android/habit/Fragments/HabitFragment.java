@@ -12,18 +12,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.android.habit.Adapters.TasksAdapter;
 import com.android.habit.Databases.TasksDB;
 import com.android.habit.Objects.Task;
 import com.android.habit.StaticObjects.ProgressManager;
-import com.android.habit.StaticObjects.TaskDaysManager;
+import com.android.habit.StaticObjects.DaysManager;
 import com.android.habit.StaticObjects.TasksList;
 import com.android.habit.R;
+import com.android.habit.StaticObjects.TasksManager;
 
 import java.util.ArrayList;
 
@@ -33,16 +32,18 @@ import java.util.ArrayList;
 public class HabitFragment extends Fragment {
 
     //List variables
-    ArrayAdapter tasksAdapter;
+    ArrayAdapter<Task> tasksAdapter;
     ListView listView;
     AdapterView.OnItemClickListener itemClickListener;
     View.OnClickListener onClickListener;
 
     TasksDB db;
+    TasksManager tasksManager;
 
     //Controls
     Button addTaskButton;
     ProgressBar levelBar;
+    AddTaskDialog addTaskDialog;
 
     //Static variables
     static String newTaskName;
@@ -53,9 +54,11 @@ public class HabitFragment extends Fragment {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        db = new TasksDB(this.getActivity());
+        tasksManager = new TasksManager(this.getActivity());
+        tasksAdapter = new TasksAdapter(this.getActivity(), (ArrayList<Task>)(TasksList.getList()));
+        TasksManager.addNewAdapter(tasksAdapter);
 
-        TaskDaysManager.markNextMidnight();
+        db = new TasksDB(this.getActivity());
 
         //Register listeners
         itemClickListener = new HabitsItemClickListener();
@@ -72,12 +75,13 @@ public class HabitFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_habit, container, false);
 
+        //Setting up dialog
+        addTaskDialog = new AddTaskDialog();
+
         //Setting up listview
-        db.updateTaskList();
-        tasksAdapter = new TasksAdapter(v.getContext(), (ArrayList<Task>)(TasksList.getList()));
         listView = (ListView) v.findViewById(R.id.fragment_habit_listview);
         listView.setOnItemClickListener(itemClickListener);
-        listView.setAdapter((ListAdapter) tasksAdapter);
+        listView.setAdapter((ArrayAdapter) tasksAdapter);
         tasksAdapter.notifyDataSetChanged();
 
         //Controls
@@ -88,10 +92,10 @@ public class HabitFragment extends Fragment {
 
 
         //Update tasks
-        if(TaskDaysManager.isPastPreviousSetMidnight()) {
-            clearTaskList();
+        if(DaysManager.isNextDay()) {
+            clearTodayTasks();
         }
-        TaskDaysManager.markNextMidnight();
+        DaysManager.markTodayVisited();
 
 
 
@@ -101,48 +105,7 @@ public class HabitFragment extends Fragment {
 
 
     private void showNewTaskDialog() {
-        final Dialog dialog = new Dialog(getView().getContext());
-        dialog.setTitle("Add New Task");
-        dialog.setContentView(R.layout.fragment_habit_dialog);
-        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-            }
-        });
-        dialog.show();
-
-
-        final EditText nameEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_name);
-        final EditText descriptionEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_description);
-        final EditText pointsEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_points);
-        Button okButton = (Button) dialog.findViewById(R.id.fragment_habit_dialog_button_ok);
-        Button cancelButton = (Button) dialog.findViewById(R.id.fragment_habit_dialog_button_cancel);
-
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                newTaskName = nameEditor.getText().toString();
-                newTaskDescription = descriptionEditor.getText().toString();
-                if(pointsEditor.getText().toString().equals("")) {
-                    newTaskPoints = 0;
-                }
-                else {
-                    newTaskPoints = Integer.parseInt(pointsEditor.getText().toString());
-                }
-
-                if(!newTaskName.equals("")) {
-                    addNewTask();
-                }
-                dialog.cancel();
-            }
-        });
-
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.cancel();
-            }
-        });
+        addTaskDialog.getNewDialog().show();
     }
 
     @Override
@@ -151,32 +114,11 @@ public class HabitFragment extends Fragment {
     }
 
 
-    /*
-    --------------->Inner listener classes
-     */
-    protected class HabitsClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            switch(v.getId()) {
-                case R.id.fragment_habit_button_add_task:
-                    showNewTaskDialog();
-            }
-        }
-    }
-    protected class HabitsItemClickListener implements AdapterView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            completeTask(TasksList.getList().get(position));
-            removeTask(position);
-        }
-    }
 
-    /*
-    --------------->Private helper methods
-     */
-    private void completeTask(Task task) {
-        updateProgressFromTask(task, true);
-    }
+    /*=========================================================================
+                            Private helper methods
+    =========================================================================*/
+    private void completeTask(Task task) {updateProgressFromTask(task, true);}
 
     private void updateProgressFromTask(Task task, boolean success) {
         if(success) {
@@ -190,18 +132,11 @@ public class HabitFragment extends Fragment {
     }
 
     private void addNewTask() {
-        db.addTaskToDatabase(new Task(newTaskName, newTaskDescription, newTaskPoints, TaskDaysManager.getTodayAsString()));
-        db.updateTaskList();
-        tasksAdapter.notifyDataSetChanged();
-
+        TasksManager.addNewTask(new Task(newTaskName, newTaskDescription, newTaskPoints, DaysManager.getTodayAsLong()));
         wipeStaticDialogData();
     }
 
-    private void removeTask(int pos) {
-        db.removeTaskFromDatabase(TasksList.getList().get(pos));
-        db.updateTaskList();
-        tasksAdapter.notifyDataSetChanged();
-    }
+    private void removeTask(int pos) {TasksManager.removeTask(TasksList.getList().get(pos));}
 
     private void wipeStaticDialogData() {
         newTaskName = "";
@@ -209,11 +144,83 @@ public class HabitFragment extends Fragment {
         newTaskPoints = 0;
     }
 
-    private void clearTaskList() {
+    private void clearTodayTasks() {
         for(Task task : TasksList.getList()) {
             updateProgressFromTask(task, false);
         }
-        TasksList.getList().clear();
-        tasksAdapter.notifyDataSetChanged();
+        TasksManager.clearTodaysTasks();
     }
+
+    /*=========================================================================
+                                Inner classes
+     ========================================================================*/
+    protected class HabitsClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            switch(v.getId()) {
+                case R.id.fragment_habit_button_add_task:
+                    showNewTaskDialog();
+            }
+        }
+    }
+    protected class HabitsItemClickListener implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            completeTask(TasksList.getList().get(position));
+            db.getThisDaysTasks(DaysManager.getTodayAsLong());
+            removeTask(position);
+        }
+    }
+    protected class AddTaskDialog {
+        Dialog dialog;
+        public AddTaskDialog() {
+        }
+
+        public Dialog getNewDialog() {
+            dialog = new Dialog(getActivity());
+            dialog.setTitle("Add New Task");
+            dialog.setContentView(R.layout.fragment_habit_dialog);
+            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                }
+            });
+
+
+            final EditText nameEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_name);
+            final EditText descriptionEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_description);
+            final EditText pointsEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_points);
+            Button okButton = (Button) dialog.findViewById(R.id.fragment_habit_dialog_button_ok);
+            Button cancelButton = (Button) dialog.findViewById(R.id.fragment_habit_dialog_button_cancel);
+
+            okButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    newTaskName = nameEditor.getText().toString();
+                    newTaskDescription = descriptionEditor.getText().toString();
+                    if(pointsEditor.getText().toString().equals("")) {
+                        newTaskPoints = 0;
+                    }
+                    else {
+                        newTaskPoints = Integer.parseInt(pointsEditor.getText().toString());
+                    }
+
+                    if(!newTaskName.equals("")) {
+                        addNewTask();
+                    }
+                    dialog.cancel();
+                }
+            });
+
+            cancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.cancel();
+                }
+            });
+
+            return dialog;
+        }
+    }
+
 }

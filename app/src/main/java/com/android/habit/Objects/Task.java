@@ -8,7 +8,7 @@ public class Task {
     String name;
     int points;
     int id;
-    String dateString;
+    long dateNum;
 
     /*
     --------------->Constructor
@@ -17,7 +17,7 @@ public class Task {
      * Default constructor
      */
     public Task() {
-        this("N/A", "n/a", 0, -1, "");
+        this("N/A", "n/a", 0, -1, 0);
     }
 
     /**
@@ -26,19 +26,19 @@ public class Task {
      * @param description description of Task
      * @param taskPoints task points, used to prioritize Tasks and calculate progress
      */
-    public Task(String name, String description, int taskPoints, int id, String dateString) {
+    public Task(String name, String description, int taskPoints, int id, long dateNum) {
         this.name = name;
         this.description = description;
         this.points = taskPoints;
         this.id = id;
-        this.dateString = dateString;
+        this.dateNum = dateNum;
     }
 
-    public Task(String name, String description, int taskPoints, String dateString) {
+    public Task(String name, String description, int taskPoints, long dateNum) {
         this.name = name;
         this.description = description;
         this.points = taskPoints;
-        this.dateString = dateString;
+        this.dateNum = dateNum;
     }
 
 
@@ -56,7 +56,7 @@ public class Task {
     public String getDescription() {return description;}
     public String getName() {return name;}
     public int getId() {return id;}
-    public String getDateString() {return dateString;}
+    public long getDateNum() {return dateNum;}
     /*
     --------------->Setters
      */
@@ -64,6 +64,6 @@ public class Task {
     public void setDescription(String description) {this.description = description;}
     public void setName(String name) {this.name = name;}
     public void setId(int id) {this.id = id;}
-    public void setDateString(String dateString) {this.dateString = dateString;}
+    public void setDateNum(long dateNum) {this.dateNum = dateNum;}
 
 }

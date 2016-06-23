@@ -2,8 +2,6 @@ package com.android.habit.Activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.habit.Facades.FragmentManagerFacade;
@@ -26,10 +23,8 @@ import com.android.habit.Fragments.SecondHelloWorldFragment;
 import com.android.habit.Fragments.ThirdHelloWorldFragment;
 import com.android.habit.R;
 import com.android.habit.StaticObjects.ProgressManager;
-import com.android.habit.StaticObjects.TaskDaysManager;
+import com.android.habit.StaticObjects.DaysManager;
 import com.android.habit.StaticObjects.TasksList;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -64,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupDrawerContent(nvDrawer);
 
         ProgressManager progress = new ProgressManager(this);
-        TaskDaysManager daysManager = new TaskDaysManager(this);
+        DaysManager daysManager = new DaysManager(this);
         TasksList.startList();
 
         //Get fragment management tools

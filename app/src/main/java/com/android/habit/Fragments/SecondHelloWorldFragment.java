@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import com.android.habit.Databases.TasksDB;
 import com.android.habit.R;
+import com.android.habit.StaticObjects.DaysManager;
+import com.android.habit.StaticObjects.TasksManager;
 
 /**
  * Created by Oscar_Local on 6/10/2016.
@@ -36,7 +38,7 @@ public class SecondHelloWorldFragment extends Fragment implements AdapterView.On
         listView = (ListView) v.findViewById(R.id.secondPageList);
         listView.setOnItemClickListener(this);
         listView.setAdapter(myAdapter);
-        TasksDB.getInstance(this.getActivity()).clearDatabase();
+        TasksManager.moveTodaysTasksToNextDay();
         return v;
     }
 
