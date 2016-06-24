@@ -10,7 +10,8 @@
         android:text="Day"
         android:id="@+id/listitem_section_day_dayname"
         android:background="#575757"
-        android:textColor="#d3d3d3"
+        android:textColor="#ffeded"
         android:gravity="right"
-        android:paddingEnd="20dp" />
+        android:paddingEnd="20dp"
+        android:textStyle="italic" />
 </LinearLayout>

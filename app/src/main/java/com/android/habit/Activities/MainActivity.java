@@ -25,6 +25,7 @@ import com.android.habit.R;
 import com.android.habit.StaticObjects.ProgressManager;
 import com.android.habit.StaticObjects.DaysManager;
 import com.android.habit.StaticObjects.TasksList;
+import com.android.habit.StaticObjects.TasksManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ProgressManager progress = new ProgressManager(this);
         DaysManager daysManager = new DaysManager(this);
         TasksList.startList();
+        TasksManager tasksManager = new TasksManager(this);
 
         //Get fragment management tools
         fm = getFragmentManager();

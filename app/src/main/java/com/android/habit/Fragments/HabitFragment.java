@@ -1,5 +1,6 @@
 package com.android.habit.Fragments;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
@@ -11,12 +12,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.habit.Adapters.TasksAdapter;
 import com.android.habit.Databases.TasksDB;
+import com.android.habit.Interfaces.DatePickable;
 import com.android.habit.Objects.Task;
 import com.android.habit.StaticObjects.ProgressManager;
 import com.android.habit.StaticObjects.DaysManager;
@@ -25,6 +29,9 @@ import com.android.habit.R;
 import com.android.habit.StaticObjects.TasksManager;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created by Oscar_Local on 6/14/2016.
@@ -38,24 +45,26 @@ public class HabitFragment extends Fragment {
     View.OnClickListener onClickListener;
 
     TasksDB db;
-    TasksManager tasksManager;
 
     //Controls
     Button addTaskButton;
     Button overdueButton;
     ProgressBar levelBar;
+    TextView levelText;
+
+    //Dialog data
     AddTaskDialog addTaskDialog;
 
     //Static variables
     static String newTaskName;
     static String newTaskDescription;
     static int newTaskPoints;
+    static long newTaskTime;
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        tasksManager = new TasksManager(this.getActivity());
         tasksAdapter = new TasksAdapter(this.getActivity(), (ArrayList<Task>)(TasksList.getList()));
         TasksManager.addNewAdapter(tasksAdapter);
 
@@ -77,7 +86,7 @@ public class HabitFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_habit, container, false);
 
         //Setting up dialog
-        addTaskDialog = new AddTaskDialog();
+        addTaskDialog = new AddTaskDialog(getActivity());
 
         //Setting up listview
         listView = (ListView) v.findViewById(R.id.fragment_habit_listview);
@@ -90,8 +99,10 @@ public class HabitFragment extends Fragment {
         overdueButton = (Button) v.findViewById(R.id.fragment_habit_button_overdue);
         addTaskButton.setOnClickListener(onClickListener);
         overdueButton.setOnClickListener(onClickListener);
+        levelText = (TextView) v.findViewById(R.id.fragment_habit_textview_level_number);
         levelBar = (ProgressBar) v.findViewById(R.id.fragment_habit_level_bar);
         levelBar.setProgress(ProgressManager.getCurrentProgress());
+        levelText.setText(String.valueOf(ProgressManager.getCurrentLevel()));
 
 
         //Update tasks
@@ -125,26 +136,28 @@ public class HabitFragment extends Fragment {
 
     private void updateProgressFromTask(Task task, boolean success) {
         if(success) {
-            levelBar.setProgress(levelBar.getProgress() + task.getTaskPoints());
-            ProgressManager.addProgress(task.getTaskPoints());
+            ProgressManager.updateLevelProgress(task.getTaskPoints());
         }
         else {
-            levelBar.setProgress(levelBar.getProgress() - task.getTaskPoints());
-            ProgressManager.subtractProgress(task.getTaskPoints());
+            ProgressManager.updateLevelProgress(-3*task.getTaskPoints());
         }
+        levelBar.setProgress(ProgressManager.getCurrentProgress());
+        levelText.setText(String.valueOf(ProgressManager.getCurrentLevel()));
     }
 
     private void addNewTask() {
-        TasksManager.addNewTask(new Task(newTaskName, newTaskDescription, newTaskPoints, DaysManager.getTodayAsLong()));
+        TasksManager.addNewTask(new Task(newTaskName, newTaskDescription, newTaskPoints, newTaskTime));
         wipeStaticDialogData();
     }
 
     private void removeTask(int pos) {TasksManager.removeTask(TasksList.getList().get(pos));}
 
+
     private void wipeStaticDialogData() {
         newTaskName = "";
         newTaskDescription = "";
         newTaskPoints = 0;
+        newTaskTime = 0;
     }
 
     private void clearTodayTasks() {
@@ -178,13 +191,47 @@ public class HabitFragment extends Fragment {
             removeTask(position);
         }
     }
-    protected class AddTaskDialog {
+
+    protected class DateSelectorDialog implements DatePickerDialog.OnDateSetListener {
+        DatePickerDialog dialog;
+        Context context;
+        DatePickable owner;
+        GregorianCalendar dateSelectorCal;
+
+        public DateSelectorDialog(Context context, DatePickable owner) {
+            this.context = context;
+            dateSelectorCal = new GregorianCalendar();
+            dateSelectorCal.setTime(DaysManager.convertIsolateDay(dateSelectorCal.getTime()));
+            this.owner = owner;
+        }
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            dateSelectorCal.set(Calendar.YEAR, year);
+            dateSelectorCal.set(Calendar.MONTH, month);
+            dateSelectorCal.set(Calendar.DAY_OF_MONTH, day);
+            newTaskTime = dateSelectorCal.getTime().getTime();
+            owner.updateDate();
+
+        }
+
+        public DatePickerDialog getNewDialog() {
+            dialog = new DatePickerDialog(context, this, dateSelectorCal.get(Calendar.YEAR), dateSelectorCal.get(Calendar.MONTH), dateSelectorCal.get(Calendar.DAY_OF_MONTH));
+            dialog.setTitle("Add Date");
+            return dialog;
+        }
+    }
+
+    protected class AddTaskDialog implements DatePickable{
         Dialog dialog;
-        public AddTaskDialog() {
+        DateSelectorDialog dateSelector;
+        Context context;
+        public AddTaskDialog(Context context) {
+            this.context = context;
         }
 
         public Dialog getNewDialog() {
-            dialog = new Dialog(getActivity());
+            dialog = new Dialog(context);
             dialog.setTitle("Add New Task");
             dialog.setContentView(R.layout.fragment_habit_dialog);
             dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -193,12 +240,22 @@ public class HabitFragment extends Fragment {
                 }
             });
 
+            dateSelector = new DateSelectorDialog(context, this);
+
 
             final EditText nameEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_name);
             final EditText descriptionEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_description);
             final EditText pointsEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_points);
+            final EditText dateEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_date);
             Button okButton = (Button) dialog.findViewById(R.id.fragment_habit_dialog_button_ok);
             Button cancelButton = (Button) dialog.findViewById(R.id.fragment_habit_dialog_button_cancel);
+
+            dateEditor.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dateSelector.getNewDialog().show();
+                }
+            });
 
             okButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -227,6 +284,12 @@ public class HabitFragment extends Fragment {
             });
 
             return dialog;
+        }
+
+        @Override
+        public void updateDate() {
+            final EditText dateEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_date);
+            dateEditor.setText(DaysManager.getFriendlyDateString(newTaskTime));
         }
     }
 

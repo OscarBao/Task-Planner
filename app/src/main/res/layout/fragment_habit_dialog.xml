@@ -67,17 +67,18 @@
         android:layout_height="wrap_content"
         android:text="Ok"
         android:id="@+id/fragment_habit_dialog_button_ok"
-        android:layout_below="@+id/fragment_habit_dialog_textview_prompt_points"
+        android:layout_below="@+id/fragment_habit_dialog_edittext_date"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="40dp" />
+        android:layout_marginTop="30dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Cancel"
         android:id="@+id/fragment_habit_dialog_button_cancel"
-        android:layout_alignBottom="@+id/fragment_habit_dialog_button_ok"
-        android:layout_toStartOf="@+id/fragment_habit_dialog_button_ok" />
+        android:layout_below="@+id/fragment_habit_dialog_edittext_date"
+        android:layout_toStartOf="@+id/fragment_habit_dialog_button_ok"
+        android:layout_marginTop="30dp" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -85,9 +86,32 @@
         android:inputType="numberSigned"
         android:ems="10"
         android:id="@+id/fragment_habit_dialog_edittext_points"
-        android:layout_below="@+id/fragment_habit_dialog_edittext_description"
-        android:layout_alignEnd="@+id/fragment_habit_dialog_edittext_description"
         android:hint="Enter task points"
-        android:layout_toEndOf="@+id/fragment_habit_dialog_textview_prompt_description"
+        android:layout_below="@+id/fragment_habit_dialog_edittext_description"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/fragment_habit_dialog_textview_prompt_points" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Date:"
+        android:id="@+id/fragment_habit_dialog_textview_prompt_date"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:layout_below="@+id/fragment_habit_dialog_textview_prompt_points"
+        android:layout_toStartOf="@+id/fragment_habit_dialog_edittext_points"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/fragment_habit_dialog_edittext_date" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="date"
+        android:ems="10"
+        android:hint="Double click to select date"
+        android:id="@+id/fragment_habit_dialog_edittext_date"
+        android:layout_below="@+id/fragment_habit_dialog_edittext_points"
+        android:layout_alignEnd="@+id/fragment_habit_dialog_button_ok"
         android:layout_toRightOf="@+id/fragment_habit_dialog_textview_prompt_points" />
 </RelativeLayout>
