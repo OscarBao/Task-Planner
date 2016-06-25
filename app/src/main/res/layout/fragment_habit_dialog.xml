@@ -109,7 +109,7 @@
         android:layout_height="wrap_content"
         android:inputType="date"
         android:ems="10"
-        android:hint="Double click to select date"
+        android:hint="Click to select date"
         android:id="@+id/fragment_habit_dialog_edittext_date"
         android:layout_below="@+id/fragment_habit_dialog_edittext_points"
         android:layout_alignEnd="@+id/fragment_habit_dialog_button_ok"

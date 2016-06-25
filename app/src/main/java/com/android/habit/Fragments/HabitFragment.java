@@ -53,7 +53,7 @@ public class HabitFragment extends Fragment {
     TextView levelText;
 
     //Dialog data
-    AddTaskDialog addTaskDialog;
+    Dialog addTaskDialog;
 
     //Static variables
     static String newTaskName;
@@ -86,7 +86,8 @@ public class HabitFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_habit, container, false);
 
         //Setting up dialog
-        addTaskDialog = new AddTaskDialog(getActivity());
+        addTaskDialog = new AddTaskDialog(getActivity()).getNewDialog();
+
 
         //Setting up listview
         listView = (ListView) v.findViewById(R.id.fragment_habit_listview);
@@ -118,9 +119,6 @@ public class HabitFragment extends Fragment {
 
 
 
-    private void showNewTaskDialog() {
-        addTaskDialog.getNewDialog().show();
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -133,6 +131,10 @@ public class HabitFragment extends Fragment {
                             Private helper methods
     =========================================================================*/
     private void completeTask(Task task) {updateProgressFromTask(task, true);}
+
+    private void showNewTaskDialog() {
+        addTaskDialog.show();
+    }
 
     private void updateProgressFromTask(Task task, boolean success) {
         if(success) {
@@ -196,13 +198,17 @@ public class HabitFragment extends Fragment {
         DatePickerDialog dialog;
         Context context;
         DatePickable owner;
+        GregorianCalendar currentDateCal;
         GregorianCalendar dateSelectorCal;
 
         public DateSelectorDialog(Context context, DatePickable owner) {
             this.context = context;
             dateSelectorCal = new GregorianCalendar();
             dateSelectorCal.setTime(DaysManager.convertIsolateDay(dateSelectorCal.getTime()));
+            currentDateCal = new GregorianCalendar();
+            currentDateCal.setTime(DaysManager.convertIsolateDay(currentDateCal.getTime()));
             this.owner = owner;
+            newTaskTime = dateSelectorCal.getTime().getTime();
         }
 
         @Override
@@ -219,12 +225,14 @@ public class HabitFragment extends Fragment {
             dialog = new DatePickerDialog(context, this, dateSelectorCal.get(Calendar.YEAR), dateSelectorCal.get(Calendar.MONTH), dateSelectorCal.get(Calendar.DAY_OF_MONTH)) {
                 @Override
                 public void onDateChanged(DatePicker view, int year, int month, int day) {
-                    if(year < dateSelectorCal.get(Calendar.YEAR) || month < dateSelectorCal.get(Calendar.MONTH) || day < dateSelectorCal.get(Calendar.DAY_OF_MONTH)) {
-                        view.updateDate(dateSelectorCal.get(Calendar.YEAR), dateSelectorCal.get(Calendar.MONTH), dateSelectorCal.get(Calendar.DAY_OF_MONTH));
+                    GregorianCalendar selectedCal = new GregorianCalendar();
+                    selectedCal.set(year, month, day, 0, 0);
+                    if(selectedCal.compareTo(currentDateCal) == -1) {
+                        view.updateDate(currentDateCal.get(Calendar.YEAR), currentDateCal.get(Calendar.MONTH), currentDateCal.get(Calendar.DAY_OF_MONTH));
                     }
                 }
             };
-            dialog.getDatePicker().setMinDate(dateSelectorCal.getTimeInMillis());
+            dialog.getDatePicker().setMinDate(currentDateCal.getTimeInMillis());
             dialog.setTitle("Add Date");
             return dialog;
         }
@@ -236,6 +244,7 @@ public class HabitFragment extends Fragment {
         Context context;
         public AddTaskDialog(Context context) {
             this.context = context;
+            dateSelector = new DateSelectorDialog(context, this);
         }
 
         public Dialog getNewDialog() {
@@ -248,8 +257,7 @@ public class HabitFragment extends Fragment {
                 }
             });
 
-            dateSelector = new DateSelectorDialog(context, this);
-
+            updateDate();
 
             final EditText nameEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_name);
             final EditText descriptionEditor = (EditText) dialog.findViewById(R.id.fragment_habit_dialog_edittext_description);
@@ -258,6 +266,12 @@ public class HabitFragment extends Fragment {
             Button okButton = (Button) dialog.findViewById(R.id.fragment_habit_dialog_button_ok);
             Button cancelButton = (Button) dialog.findViewById(R.id.fragment_habit_dialog_button_cancel);
 
+            dateEditor.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if(hasFocus) dateSelector.getNewDialog().show();
+                }
+            });
             dateEditor.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
