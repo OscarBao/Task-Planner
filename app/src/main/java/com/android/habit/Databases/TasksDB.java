@@ -68,19 +68,19 @@ public class TasksDB extends SQLiteOpenHelper {
 
     public void moveAllTodaysTasksToNextDay() {
         SQLiteDatabase wdb = this.getWritableDatabase();
-        String updateTasksByMillisecondsPerDayQuery =
+        String updateTasksToTodayQuery =
                 (
-                    "UPDATE " + DBConstants.TASKS_TABLE_NAME + " SET " + DBConstants.TASKS_COLUMN_DATE
-                    + " = " + DBConstants.TASKS_COLUMN_DATE + " +86400000 WHERE " + DBConstants.TASKS_COLUMN_DATE
-                    + " = " + DaysManager.getTodayAsLong() + ";"
-                );
-        wdb.execSQL(updateTasksByMillisecondsPerDayQuery);
+                        "UPDATE " + DBConstants.TASKS_TABLE_NAME + " SET " + DBConstants.TASKS_COLUMN_DATE
+                        + "=" + DaysManager.getTodayAsLong() + " WHERE " + DBConstants.TASKS_COLUMN_DATE
+                        + " < " + DaysManager.getTodayAsLong() + ";"
+                        );
+        wdb.execSQL(updateTasksToTodayQuery);
         wdb.close();
     }
 
-    public ArrayList<Task> getThisDaysTasks(long dateNum) {
+    public ArrayList<Task> getThisDaysOverdueTasks(long dateNum) {
         SQLiteDatabase rdb = this.getReadableDatabase();
-        Cursor c = rdb.rawQuery("SELECT * FROM " + DBConstants.TASKS_TABLE_NAME + " WHERE " + DBConstants.TASKS_COLUMN_DATE + " = " + dateNum + ";", null);
+        Cursor c = rdb.rawQuery("SELECT * FROM " + DBConstants.TASKS_TABLE_NAME + " WHERE " + DBConstants.TASKS_COLUMN_DATE + " < " + dateNum + ";", null);
 
         System.out.println("-------------Cursor size is " + c.getCount());
 

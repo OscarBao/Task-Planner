@@ -161,7 +161,7 @@ public class HabitFragment extends Fragment {
     }
 
     private void clearTodayTasks() {
-        for(Task task : db.getThisDaysTasks(DaysManager.getTodayAsLong())) {
+        for(Task task : db.getThisDaysOverdueTasks(DaysManager.getTodayAsLong())) {
             updateProgressFromTask(task, false);
         }
         TasksManager.moveAllTodaysTasksToNextDay();
@@ -187,7 +187,7 @@ public class HabitFragment extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             completeTask(TasksList.getList().get(position));
-            db.getThisDaysTasks(DaysManager.getTodayAsLong());
+            db.getThisDaysOverdueTasks(DaysManager.getTodayAsLong());
             removeTask(position);
         }
     }
@@ -216,7 +216,15 @@ public class HabitFragment extends Fragment {
         }
 
         public DatePickerDialog getNewDialog() {
-            dialog = new DatePickerDialog(context, this, dateSelectorCal.get(Calendar.YEAR), dateSelectorCal.get(Calendar.MONTH), dateSelectorCal.get(Calendar.DAY_OF_MONTH));
+            dialog = new DatePickerDialog(context, this, dateSelectorCal.get(Calendar.YEAR), dateSelectorCal.get(Calendar.MONTH), dateSelectorCal.get(Calendar.DAY_OF_MONTH)) {
+                @Override
+                public void onDateChanged(DatePicker view, int year, int month, int day) {
+                    if(year < dateSelectorCal.get(Calendar.YEAR) || month < dateSelectorCal.get(Calendar.MONTH) || day < dateSelectorCal.get(Calendar.DAY_OF_MONTH)) {
+                        view.updateDate(dateSelectorCal.get(Calendar.YEAR), dateSelectorCal.get(Calendar.MONTH), dateSelectorCal.get(Calendar.DAY_OF_MONTH));
+                    }
+                }
+            };
+            dialog.getDatePicker().setMinDate(dateSelectorCal.getTimeInMillis());
             dialog.setTitle("Add Date");
             return dialog;
         }
