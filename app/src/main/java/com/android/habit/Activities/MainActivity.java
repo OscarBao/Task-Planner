@@ -128,15 +128,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void selectDrawerItem(MenuItem menuItem) {
         Fragment fragment = null;
         switch(menuItem.getItemId()) {
-            case R.id.nav_first_fragment:
-                currentFragment = new FirstHelloWorldFragment();
-                break;
-            case R.id.nav_second_fragment:
-                currentFragment = new SecondHelloWorldFragment();
-                break;
-            case R.id.nav_third_fragment:
-                currentFragment = new ThirdHelloWorldFragment();
-                break;
             case R.id.nav_habit_fragment:
                 currentFragment = new HabitFragment();
                 break;
