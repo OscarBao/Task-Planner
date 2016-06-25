@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.habit.Adapters.TasksAdapter;
 import com.android.habit.Databases.TasksDB;
@@ -133,7 +134,7 @@ public class HabitFragment extends Fragment {
     private void completeTask(Task task) {updateProgressFromTask(task, true);}
 
     private void showNewTaskDialog() {
-        addTaskDialog.show();
+        new AddTaskDialog(getActivity()).getNewDialog().show();
     }
 
     private void updateProgressFromTask(Task task, boolean success) {
@@ -293,8 +294,11 @@ public class HabitFragment extends Fragment {
 
                     if(!newTaskName.equals("")) {
                         addNewTask();
+                        dialog.cancel();
                     }
-                    dialog.cancel();
+                    else {
+                        Toast.makeText(context, "Task must be assigned a name.", Toast.LENGTH_LONG).show();
+                    }
                 }
             });
 

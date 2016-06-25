@@ -148,10 +148,6 @@ public class TasksDB extends SQLiteOpenHelper {
             prevLatestDate = latestDate;
         }
 
-        for(Task task : TasksList.getList()) {
-            System.out.println("");
-            Log.i("TasksDB PrintList", "Next task is: " + task.getName() + " with id " + task.getId() + " and date " + task.getDateNum());
-        }
     }
 
     private Task buildTaskFromCursor(Cursor c) {
