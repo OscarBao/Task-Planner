@@ -37,7 +37,6 @@
 
     <ListView
         android:background="#aac5c5c5"
-        android:layout_margin="14dp"
         android:padding="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,8 +45,11 @@
         android:id="@+id/fragment_habit_listview"
         android:layout_below="@+id/fragment_habit_level_bar"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/fragment_habit_button_add_task"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginTop="14dp"
+        android:layout_above="@+id/fragment_habit_textview_instructions" />
 
     <Button
         android:layout_width="wrap_content"
@@ -58,11 +60,12 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Overdue"
-        android:id="@+id/fragment_habit_button_overdue"
-        android:layout_alignTop="@+id/fragment_habit_button_add_task"
-        android:layout_toEndOf="@+id/fragment_habit_button_add_task" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="->Swipe right on a task to complete it->"
+        android:id="@+id/fragment_habit_textview_instructions"
+        android:layout_above="@+id/fragment_habit_button_add_task"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

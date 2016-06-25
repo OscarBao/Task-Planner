@@ -6,22 +6,27 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.habit.Adapters.TasksAdapter;
 import com.android.habit.Databases.TasksDB;
 import com.android.habit.Interfaces.DatePickable;
+import com.android.habit.Objects.SwipeDetector;
 import com.android.habit.Objects.Task;
 import com.android.habit.StaticObjects.ProgressManager;
 import com.android.habit.StaticObjects.DaysManager;
@@ -44,12 +49,12 @@ public class HabitFragment extends Fragment {
     ListView listView;
     AdapterView.OnItemClickListener itemClickListener;
     View.OnClickListener onClickListener;
+    SwipeDetector swipeDetector;
 
     TasksDB db;
 
     //Controls
     Button addTaskButton;
-    Button overdueButton;
     ProgressBar levelBar;
     TextView levelText;
 
@@ -91,16 +96,16 @@ public class HabitFragment extends Fragment {
 
 
         //Setting up listview
+        swipeDetector = new SwipeDetector();
         listView = (ListView) v.findViewById(R.id.fragment_habit_listview);
+        listView.setOnTouchListener(swipeDetector);
         listView.setOnItemClickListener(itemClickListener);
         listView.setAdapter((ArrayAdapter) tasksAdapter);
         tasksAdapter.notifyDataSetChanged();
 
         //Controls
         addTaskButton = (Button) v.findViewById(R.id.fragment_habit_button_add_task);
-        overdueButton = (Button) v.findViewById(R.id.fragment_habit_button_overdue);
         addTaskButton.setOnClickListener(onClickListener);
-        overdueButton.setOnClickListener(onClickListener);
         levelText = (TextView) v.findViewById(R.id.fragment_habit_textview_level_number);
         levelBar = (ProgressBar) v.findViewById(R.id.fragment_habit_level_bar);
         levelBar.setProgress(ProgressManager.getCurrentProgress());
@@ -180,18 +185,20 @@ public class HabitFragment extends Fragment {
                 case R.id.fragment_habit_button_add_task:
                     showNewTaskDialog();
                     break;
-                case R.id.fragment_habit_button_overdue:
-                    clearTodayTasks();
-                    break;
             }
         }
     }
     protected class HabitsItemClickListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            completeTask(TasksList.getList().get(position));
-            db.getThisDaysOverdueTasks(DaysManager.getTodayAsLong());
-            removeTask(position);
+            if(swipeDetector.swipeDetected()) {
+                Log.i("HabitsItemClickListener", "Swipe Detected");
+                if(swipeDetector.getAction() == SwipeDetector.Action.LR) {
+                    completeTask(TasksList.getList().get(position));
+                    db.getThisDaysOverdueTasks(DaysManager.getTodayAsLong());
+                    removeTask(position);
+                }
+            }
         }
     }
 

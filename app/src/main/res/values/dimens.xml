@@ -5,5 +5,7 @@
 
     <dimen name="fab_margin">100dp</dimen>
 
+    <dimen name="fragment_habit_dialog_item_vertical_padding">10dp</dimen>
+
     <dimen name="fab_helloworld_padding">40dp</dimen>
 </resources>
