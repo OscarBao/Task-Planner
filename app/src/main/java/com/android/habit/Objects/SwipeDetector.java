@@ -47,7 +47,6 @@ public class SwipeDetector implements View.OnTouchListener {
                 float deltaX = downX - upX;
                 float deltaY = downY - upY;
 
-                Log.i(logTag, "Movement detected: " + Math.abs(deltaX));
 
                 // horizontal swipe detection
                 if (Math.abs(deltaX) > MIN_DISTANCE) {

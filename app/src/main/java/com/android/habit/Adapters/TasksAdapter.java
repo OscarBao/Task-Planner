@@ -1,13 +1,16 @@
 package com.android.habit.Adapters;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.habit.Fragments.HabitFragment;
 import com.android.habit.Objects.Task;
 import com.android.habit.R;
 import com.android.habit.StaticObjects.DaysManager;
@@ -19,8 +22,10 @@ import java.util.ArrayList;
  * Created by Oscar_Local on 6/14/2016.
  */
 public class TasksAdapter extends ArrayAdapter<Task> {
-    public TasksAdapter(Context context, ArrayList<Task> tasks)  {
+    HabitFragment parentFragment;
+    public TasksAdapter(Context context, ArrayList<Task> tasks, HabitFragment parentFragment)  {
         super(context, 0, tasks);
+        this.parentFragment = parentFragment;
     }
 
     @Override
@@ -41,14 +46,22 @@ public class TasksAdapter extends ArrayAdapter<Task> {
         }
         else if(viewType == 1) {
             //Fill in task data
+            final int pos = position;
             Task task = getItem(position);
             TextView taskName = (TextView) view.findViewById(R.id.listitem_task_textview_name);
             TextView taskDescription = (TextView) view.findViewById(R.id.listitem_task_textview_description);
             TextView taskPoints = (TextView) view.findViewById(R.id.listitem_task_textview_points);
+            Button taskComplete = (Button) view.findViewById(R.id.listitem_task_button_complete);
 
             taskName.setText(task.getName());
             taskDescription.setText(task.getDescription());
             taskPoints.setText(task.getTaskPointsAsString());
+            taskComplete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    parentFragment.completeTask(getItem(pos), pos);
+                }
+            });
         }
         return view;
     }

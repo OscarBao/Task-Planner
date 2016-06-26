@@ -71,7 +71,7 @@ public class HabitFragment extends Fragment {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        tasksAdapter = new TasksAdapter(this.getActivity(), (ArrayList<Task>)(TasksList.getList()));
+        tasksAdapter = new TasksAdapter(this.getActivity(), (ArrayList<Task>)(TasksList.getList()), this);
         TasksManager.addNewAdapter(tasksAdapter);
 
         db = new TasksDB(this.getActivity());
@@ -123,8 +123,11 @@ public class HabitFragment extends Fragment {
         return v;
     }
 
-
-
+    public void completeTask(Task task, int position) {
+        db.getThisDaysOverdueTasks(DaysManager.getTodayAsLong());
+        removeTask(position);
+        updateProgressFromTask(task, true);
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -132,11 +135,10 @@ public class HabitFragment extends Fragment {
     }
 
 
-
     /*=========================================================================
                             Private helper methods
     =========================================================================*/
-    private void completeTask(Task task) {updateProgressFromTask(task, true);}
+
 
     private void showNewTaskDialog() {
         new AddTaskDialog(getActivity()).getNewDialog().show();
@@ -192,11 +194,13 @@ public class HabitFragment extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if(swipeDetector.swipeDetected()) {
-                Log.i("HabitsItemClickListener", "Swipe Detected");
-                if(swipeDetector.getAction() == SwipeDetector.Action.LR) {
-                    completeTask(TasksList.getList().get(position));
-                    db.getThisDaysOverdueTasks(DaysManager.getTodayAsLong());
-                    removeTask(position);
+                if(swipeDetector.getAction() == SwipeDetector.Action.RL) {
+                    View taskView = tasksAdapter.getView(position, view, parent);
+                    taskView.findViewById(R.id.listitem_task_button_complete).setVisibility(View.VISIBLE);
+                }
+                else if(swipeDetector.getAction() == SwipeDetector.Action.LR) {
+                    View taskView = tasksAdapter.getView(position, view, parent);
+                    taskView.findViewById(R.id.listitem_task_button_complete).setVisibility(View.INVISIBLE);
                 }
             }
         }

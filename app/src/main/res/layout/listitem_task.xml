@@ -2,6 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Complete"
+        android:visibility="invisible"
+        android:id="@+id/listitem_task_button_complete"
+        android:background="#00ff00"
+        android:textColor="#ffffff"
+        android:padding="7dp"
+        android:textStyle="bold"
+        android:paddingEnd="13dp"
+        android:paddingStart="13dp"
+        android:textSize="20sp"
+        android:focusable="false"
+        android:layout_alignTop="@+id/listitem_task_textview_points"
+        android:layout_alignEnd="@+id/listitem_task_textview_points" />
 
     <TextView
         android:id="@+id/listitem_task_textview_name"
@@ -29,6 +45,8 @@
         android:layout_alignEnd="@+id/listitem_task_textview_name"
         android:layout_marginLeft="15dp" />
 
+
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,5 +58,6 @@
         android:layout_alignParentEnd="true"
         android:layout_alignBottom="@+id/listitem_task_textview_name"
         android:layout_marginRight="20dp" />
+
 
 </RelativeLayout>
